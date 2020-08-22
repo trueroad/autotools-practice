@@ -1,0 +1,5 @@
+SUBDIRS = lisp
+dist_doc_DATA = README.md LICENSE
+EXTRA_DIST = autogen.sh
+
+ACLOCAL_AMFLAGS = -I m4
