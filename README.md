@@ -8,6 +8,7 @@ Autotools (autoconf, automake, libtool) の使い方が、
 ## サンプル
 
 * [通常の実行ファイル](./executable-bin/)
+* [静的ライブラリ](./static-lib/)
 
 ## ライセンス
 

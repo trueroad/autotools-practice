@@ -1,0 +1,6 @@
+#ifndef INCLUDE_GUARD_HELLO_WORLD_HH
+#define INCLUDE_GUARD_HELLO_WORLD_HH
+
+int hello_world (void);
+
+#endif // INCLUDE_GUARD_HELLO_WORLD_HH
