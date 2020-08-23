@@ -8,7 +8,7 @@ Autotools (autoconf, automake, libtool) の使い方が、
 ## サンプル
 
 * [通常の実行ファイル](./executable-bin/)
-* [静的ライブラリ](./static-lib/)
+* [静的ライブラリ](./static-lib/)、[pkg-config 付き](./static-lib-pkgconfig/)
 * [共有ライブラリ](./shared-lib/)
 * [Emacs Lisp](./emacs-lisp/)
 * [GNU Emacs ダイナミックモジュール](./emacs-dynamic-module/)

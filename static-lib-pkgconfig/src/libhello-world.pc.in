@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE@
+Description: @PACKAGE_DESCRIPTION@
+Version: @VERSION@
+Libs: -L${libdir} -lhello-world
+Cflags: -I${includedir}/@PACKAGE@
