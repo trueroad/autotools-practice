@@ -7,7 +7,12 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 # Checks for programs.
 AM_PATH_LISPDIR
-lispdir=${lispdir}/${PACKAGE}
+AC_ARG_WITH([pkglispdir],
+  AS_HELP_STRING([--with-pkglispdir=DIR],
+    [where to install lisp files (default lispdir/PACKAGE)]),
+  [pkglispdir=${withval}], [pkglispdir='${lispdir}/${PACKAGE}'])
+AC_SUBST([pkglispdir])
+AC_MSG_NOTICE([where to install lisp files is ${pkglispdir}])
 
 # Checks for libraries.
 

@@ -47,19 +47,23 @@ ACLOCAL_AMFLAGS = -I m4
 Emacs Lisp ディレクトリの Makefile の元になるファイルです。
 
 ```Makefile
-lisp_LISP = hello.el
+pkglisp_LISP = hello.el
 EXTRA_DIST = hello.el
 ```
 
-* `lisp_LISP`
-    * `lisp` は `/usr/share/emacs/site-lisp` などの
-       site-lisp ディレクトリへのインストールを意味し、
+* `pkglisp_LISP`
+    * `pkglisp` はインストール先を Makefile 変数 `pkglispdir`
+      で指定するカスタム設定を意味し
+      （`pkglisp` ではなくて `lisp` を使うと、後述の AM_PATH_LISPDIR
+      で設定される Makefile 変数 `lispdir` に格納される
+      `/usr/share/emacs/site-lisp` などの site-lisp
+      ディレクトリへのインストールを意味します）
       `LISP` は Emacs Lisp を意味します。
       `hello.el` という名前の Emacs Lisp ソースファイルと、
       それをバイトコンパイルした `hello.elc` の両方をインストールする
       指定になっています。
 * `EXTRA_DIST`
-    * `lisp_LISP` に指定したファイルは
+    * `*_LISP` に指定したファイルは
       （実行ファイルやライブラリが含まれないのと同様）そのままでは
       パッケージのアーカイブに含まれないので、ここで追加しています。
 
@@ -93,7 +97,7 @@ configure.scan を
 ```diff
 --- configure.scan
 +++ configure.ac
-@@ -2,9 +2,12 @@
+@@ -2,9 +2,17 @@
  # Process this file with autoconf to produce a configure script.
 
  AC_PREREQ([2.69])
@@ -103,7 +107,12 @@ configure.scan を
 
  # Checks for programs.
 +AM_PATH_LISPDIR
-+lispdir=${lispdir}/${PACKAGE}
++AC_ARG_WITH([pkglispdir],
++  AS_HELP_STRING([--with-pkglispdir=DIR],
++    [where to install lisp files (default lispdir/PACKAGE)]),
++  [pkglispdir=${withval}], [pkglispdir='${lispdir}/${PACKAGE}'])
++AC_SUBST([pkglispdir])
++AC_MSG_NOTICE([where to install lisp files is ${pkglispdir}])
 
  # Checks for libraries.
 
@@ -113,23 +122,38 @@ configure.scan を
 * `AM_INIT_AUTOMAKE`
 * `AM_PATH_LISPDIR`
     * バイトコンパイルする Emacs と、Emacs Lisp のインストール先を探します。
-* `lispdir`
-    * そのままだと Emacs Lisp のインストール先が `/usr/share/emacs/site-lisp`
-      などのようなパッケージ名が付かないものになるので、
-      パッケージ名の付いたサブディレクトリ
-      `/usr/share/emacs/site-lisp/パッケージ名` などのように変更します。
-      （Makefile.am の中で変更するのは少々困難※なのでここで変更します。）
-
-※ Makefile.am の中で `lispdir = $(lispdir)/$(PACKAGE)`
-すると、再帰的な定義でエラーになります。
-`lispdir := $(lispdir)/$(PACKAGE)` にするには AM_INIT_AUTOMAKE
-に `-Wno-portability` オプションが必要になる上、
-Makefile 中では完全に置き換えられてしまう（元の lispdir 定義が消える）ので、
-インストール先が `/パッケージ名` になってしまい、おかしくなります。
-（別の名前に保存し AC_SUBST で Makefile から使えるようにして、
-Makefile.am で `lispdir := $(別の名前)/$(PACKAGE)` のようにするなど、
-置き換える方法が無いわけではないですが、
-そこまでするメリットはないものと思います。）
+      Emacs Lisp のインストール先は Makefile 変数 `lispdir` に格納されます。
+      `lispdir` をそのまま使うとインストール先が `/usr/share/emacs/site-lisp`
+      などのようなパッケージ名が付かないものになりますが、
+      パッケージ名が付いたものにしたいので `lispdir` ではなく、
+      カスタム設定を使うことにします。
+* `AC_ARG_WITH`
+    * カスタム設定する Emacs Lisp のインストール先を configure
+      スクリプトのコマンドラインオプションで指定できるようにします。
+        * `[pkglispdir]`
+            * オプション名を `--with-pkglispdir` にします。
+        * `AS_HELP_STRING`
+            * configure スクリプトを `--help` つきで起動したときの
+              ヘルプメッセージの内容（オプション名と説明）を指定します。
+        * `[pkglispdir=${withval}]`
+            * オプションが指定された場合にその内容を変数 `pkglispdir`
+              に格納します。シングルクォート無しなので変数展開されます。
+              （`withval` はスクリプト内で使いまわされる変数なので
+              展開が必要です。）
+        * `[pkglispdir='${lispdir}/${PACKAGE}']`
+            * オプションが指定されなかった場合に、AM_PATH_LISPDIR
+              で得られた変数 `lispdir` にパッケージ名を付けたものを、
+              変数 `pkglispdir` に設定します。
+              シングルクォート付きなので変数展開されずに
+              そのままの内容で設定されます。
+              （Makefile 内にそのまま設定され、make 実行時に展開されます。）
+* `AC_SUBST`
+    * 変数 `pkglispdir` を Makefile で使用できる Makefile 変数にします。
+      `lispdir` は AM_PATH_LISPDIR の中で既に AC_SUBST されているので、
+      重ねて AC_SUBST する必要はありません。
+* `AC_MSG_NOTICE`
+    * configure スクリプト実行時に、上記で決定された最終的な
+      Emacs Lisp のインストール先 `pkglispdir` を表示します。
 
 ### autogen.sh を実行
 

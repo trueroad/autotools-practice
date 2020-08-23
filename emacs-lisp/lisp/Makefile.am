@@ -1,2 +1,2 @@
-lisp_LISP = hello.el
+pkglisp_LISP = hello.el
 EXTRA_DIST = hello.el
