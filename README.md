@@ -11,6 +11,7 @@ Autotools (autoconf, automake, libtool) の使い方が、
 * [静的ライブラリ](./static-lib/)
 * [共有ライブラリ](./shared-lib/)
 * [Emacs Lisp](./emacs-lisp/)
+* [GNU Emacs ダイナミックモジュール](./emacs-dynamic-module/)
 
 ## ライセンス
 
